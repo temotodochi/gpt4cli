@@ -9,7 +9,7 @@ python gpt4cli.py
 
 OR
 
-unzip and run binaries.
+unzip and run binaries. Windows binary is not code signed, easily causes virus alerts. If there are such issues, you can create your own executables from source with pyinstaller -F gtp4cli.py and whitelist that if you don't trust the binary from here. 
 
 set API keys and default prompt and custom startup instructions during first run.
 
