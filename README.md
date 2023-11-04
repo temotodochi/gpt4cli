@@ -3,7 +3,15 @@ A small and simple python based CLI app to converse with gpt-4 with contextual h
 
 Install:
 
-unzip and run to set API keys and default prompt and custom startup instructions. 
+pip install -r requirements.txt
+
+python gpt4cli.py
+
+OR
+
+unzip and run binaries.
+
+set API keys and default prompt and custom startup instructions during first run.
 
 usage:
 
