@@ -24,6 +24,7 @@ def _(event):
     " When control+enter is pressed, insert a newline. "
     event.current_buffer.insert_text('\n')
 
+
 # Create a PromptSession with the custom key bindings
 session = PromptSession(key_bindings=bindings)
 
@@ -33,18 +34,18 @@ def load_config():
     if not os.path.exists('config.ini'):
         config['Settings'] = {
             'api_key': input("Enter your OpenAI API key: "),
-            'default_context': input("Context is king! Your context will be saved in a context file, but for a start, tell in a few sentences to gpt about yourself and in which manner you would like it to respond to you.\n\nFor example: I'm a techie from $city and $country, as european i'd like more direct answers than americans and i'm well versed in $expertise and don't need beginner warnings in that field. You will work as my personal assistant. Lets assume we are polite to each others even when we don't write in that manner. \n\nYou can input widely different contexts here, for examples check out https://github.com/f/awesome-chatgpt-prompts \n\nEnter your default context: ")
+            'default_context': input("Context is king! Your context will be saved in a context file, but for a start, tell in a few sentences to gpt about yourself and in which manner you would like it to respond to you.\n\nFor example: I'm a techie from $city and $country, as european i'd like more direct answers than americans and i'm well versed in $expertise and don't need beginner warnings in that field. You will work as my personal assistant. Lets assume we are polite to each others even when we don't write in that manner. \n\nYou can input widely different contexts here, for examples check out https://github.com/f/awesome-chatgpt-prompts \n\nEnter your default context: "),
+            'gpt_model': input("For model list, refer to https://platform.openai.com/docs/models \nEnter your chosen GPT model:") 
         }
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
     else:
         config.read('config.ini')
 
-    return config['Settings']['api_key'], config['Settings']['default_context']
+    return config['Settings']['api_key'], config['Settings']['default_context'], config['Settings']['gpt_model']
 
-api_key, default_context = load_config()
+api_key, default_context, gpt_model = load_config()
 client = OpenAI(api_key=api_key)
-
 
 def save_context_to_disk(context):
     with open('context.pkl', 'wb') as f:
@@ -59,7 +60,7 @@ def load_context_from_disk():
 
 def generate_response(prompt, context):
     """
-    Generates a response using the GPT-4 model based on the given prompt and context.
+    Generates a response using the GPT model based on the given prompt and context.
 
     Parameters:
     - prompt (str): The user's input.
@@ -73,9 +74,9 @@ def generate_response(prompt, context):
     messages.extend(context)  # Include the conversation history
     messages.append({"role": "user", "content": prompt})  # Add the current user input
 
-    # Call the GPT-3.5-turbo model
+    # Call and choose the GPT model
     completion = client.chat.completions.create(
-        model="gpt-4",
+        model=gpt_model,
         messages=messages
     )
     # Convert the response object to a dictionary
@@ -107,11 +108,12 @@ def main():
         except Exception as e:
             print(f"Error: {e}")
             return
+
         response = response.replace("\n", " ")
-        print(f'GPT-4: {response}') # Replacing newlines with spaces
+        print(f'GPT-4: {response}')  # Replacing newlines with spaces
         context.append({"role": "assistant", "content": response})
     else:
-        print(f"\nEnter to send, ctrl-enter for newline, type exit to quit.\n")
+        print(f"\nEnter to send, ctrl-enter for newline, type exit to quit. Model in use is: {gpt_model}\n")
         while True:
             user_input = session.prompt(ANSI('\x1b[32mYou:\x1b[0m '), multiline=True)  # Collect user input
             if user_input.lower() == 'exit':  # Exit condition
@@ -125,7 +127,7 @@ def main():
                 print(f"Error: {e}")
                 continue
 
-            print(f'{Fore.RED}GPT-4:{Style.RESET_ALL} {response}', end='\n\n')
+            print(f'{Fore.RED}GPT:{Style.RESET_ALL} {response}', end='\n\n')
             context.append({"role": "assistant", "content": response})
 
             save_context_to_disk(context)
