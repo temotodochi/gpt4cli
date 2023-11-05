@@ -1,7 +1,7 @@
 # gpt4cli
 A small and simple python based CLI app to converse with gpt-4 with contextual history enabled
 
-GPT model can be changed freely from GPT4 to 3.5-turbo or 16k for more memory. GPT4 can get expensive when historical context grows. Very long historical context is useful in personal assistant mode, less useful as programming companion etc. 
+GPT model can be changed freely from GPT4 to 3.5-turbo or 16k for more memory. Very long historical context is useful in personal assistant mode, less useful as programming companion etc. GPT does count context with total processed bytes in billing, but it does not count towards used tokens. 
 
 Install:
 
